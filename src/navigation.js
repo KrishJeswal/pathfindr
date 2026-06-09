@@ -52,36 +52,39 @@ export const NODES = {
   '1_LAB':     { id: '1_LAB', floor: 1, x: 350, y: 430, isRoom: true, label: "Advanced Lab" },
   '1_DSPLAB':  { id: '1_DSPLAB', floor: 1, x: 200, y: 517, isRoom: true, label: "DSP Lab" },
 
-  // Second Floor — right wing vertical hallway (x = 660), lift + stairs at top
-  '2_CORR_1': { id: '2_CORR_1', floor: 2, x: 660, y: 200, isRoom: false }, // top: lift + bridge junction
-  '2_CORR_2': { id: '2_CORR_2', floor: 2, x: 660, y: 270, isRoom: false }, // by ET-201
-  '2_CORR_3': { id: '2_CORR_3', floor: 2, x: 660, y: 390, isRoom: false }, // by ET-202
-  '2_CORR_4': { id: '2_CORR_4', floor: 2, x: 660, y: 500, isRoom: false }, // by ET-203
-  '2_WING_1': { id: '2_WING_1', floor: 2, x: 470, y: 215, isRoom: false }, // bridge into left cluster
+  // Second Floor — coords are the on-screen centers after the source-plan
+  // transforms (right wing translated +100; left wing scaled 0.75 + rotated 60deg).
+  '2_CORR_1':  { id: '2_CORR_1', floor: 2, x: 750, y: 197, isRoom: false }, // hallway top (by lift)
+  '2_CORR_2':  { id: '2_CORR_2', floor: 2, x: 750, y: 279, isRoom: false }, // by ET-201
+  '2_CORR_3':  { id: '2_CORR_3', floor: 2, x: 750, y: 400, isRoom: false }, // by ET-202
+  '2_CORR_4':  { id: '2_CORR_4', floor: 2, x: 750, y: 530, isRoom: false }, // by ET-203
+  '2_BRIDGE':  { id: '2_BRIDGE', floor: 2, x: 544, y: 286, isRoom: false }, // diagonal bridge midpoint
+  '2_WING':    { id: '2_WING', floor: 2, x: 264, y: 437, isRoom: false },   // left wing corridor
 
   // Second Floor Rooms
-  '2_LIFT':  { id: '2_LIFT', floor: 2, x: 712, y: 175, isRoom: true, label: "Lift", isTransit: true },
-  '2_ET201': { id: '2_ET201', floor: 2, x: 787, y: 270, isRoom: true, label: "ET-201" },
-  '2_ET202': { id: '2_ET202', floor: 2, x: 787, y: 390, isRoom: true, label: "ET-202" },
-  '2_ET203': { id: '2_ET203', floor: 2, x: 787, y: 500, isRoom: true, label: "ET-203" },
-  '2_LAB':   { id: '2_LAB', floor: 2, x: 342, y: 305, isRoom: true, label: "Second Floor Lab" },
-  '2_PG':    { id: '2_PG', floor: 2, x: 542, y: 280, isRoom: true, label: "PG Classroom" },
-  '2_FREE':  { id: '2_FREE', floor: 2, x: 542, y: 372, isRoom: true, label: "Free Space" },
-  '2_STAFF': { id: '2_STAFF', floor: 2, x: 442, y: 470, isRoom: true, label: "Second Floor Staff Room" },
+  '2_LIFT':  { id: '2_LIFT', floor: 2, x: 800, y: 197, isRoom: true, label: "Lift", isTransit: true },
+  '2_ET201': { id: '2_ET201', floor: 2, x: 880, y: 279, isRoom: true, label: "ET-201" },
+  '2_ET202': { id: '2_ET202', floor: 2, x: 880, y: 400, isRoom: true, label: "ET-202" },
+  '2_ET203': { id: '2_ET203', floor: 2, x: 880, y: 530, isRoom: true, label: "ET-203" },
+  '2_LAB':   { id: '2_LAB', floor: 2, x: 215, y: 353, isRoom: true, label: "Second Floor Lab" },
+  '2_PG':    { id: '2_PG', floor: 2, x: 335, y: 508, isRoom: true, label: "PG Classroom" },
+  '2_FREE':  { id: '2_FREE', floor: 2, x: 254, y: 555, isRoom: true, label: "Free Space" },
+  '2_STAFF': { id: '2_STAFF', floor: 2, x: 134, y: 512, isRoom: true, label: "Second Floor Staff Room" },
 
-  // Third Floor — top washrooms, angled corridor, right-side room column
-  '3_CORR_TOP': { id: '3_CORR_TOP', floor: 3, x: 410, y: 180, isRoom: false }, // below washrooms
-  '3_WING':     { id: '3_WING', floor: 3, x: 545, y: 250, isRoom: false },     // angled link
-  '3_CORR_1':   { id: '3_CORR_1', floor: 3, x: 660, y: 320, isRoom: false },   // lift area
-  '3_CORR_2':   { id: '3_CORR_2', floor: 3, x: 660, y: 405, isRoom: false },   // by ET-301
-  '3_CORR_3':   { id: '3_CORR_3', floor: 3, x: 660, y: 520, isRoom: false },   // by LAB
+  // Third Floor — coords are on-screen centers after the source-plan transforms
+  // (section A translated -100,+50; washrooms -100,-50; corridor rotated 39deg).
+  '3_CORR_TOP': { id: '3_CORR_TOP', floor: 3, x: 560, y: 95, isRoom: false },  // below washrooms
+  '3_WING':     { id: '3_WING', floor: 3, x: 549, y: 194, isRoom: false },     // angled corridor
+  '3_CORR_1':   { id: '3_CORR_1', floor: 3, x: 475, y: 330, isRoom: false },   // lift area
+  '3_CORR_2':   { id: '3_CORR_2', floor: 3, x: 475, y: 420, isRoom: false },   // by ET-301
+  '3_CORR_3':   { id: '3_CORR_3', floor: 3, x: 475, y: 460, isRoom: false },   // by LAB
 
   // Third Floor Rooms
-  '3_MEN':   { id: '3_MEN', floor: 3, x: 325, y: 125, isRoom: true, label: "Third Floor Men's Washroom" },
-  '3_WOMEN': { id: '3_WOMEN', floor: 3, x: 485, y: 125, isRoom: true, label: "Third Floor Women's Washroom" },
-  '3_LIFT':  { id: '3_LIFT', floor: 3, x: 712, y: 315, isRoom: true, label: "Lift", isTransit: true },
-  '3_ET301': { id: '3_ET301', floor: 3, x: 785, y: 400, isRoom: true, label: "ET-301" },
-  '3_LAB':   { id: '3_LAB', floor: 3, x: 787, y: 530, isRoom: true, label: "Third Floor Lab" },
+  '3_MEN':   { id: '3_MEN', floor: 3, x: 510, y: 45, isRoom: true, label: "Third Floor Men's Washroom" },
+  '3_WOMEN': { id: '3_WOMEN', floor: 3, x: 610, y: 45, isRoom: true, label: "Third Floor Women's Washroom" },
+  '3_LIFT':  { id: '3_LIFT', floor: 3, x: 520, y: 350, isRoom: true, label: "Lift", isTransit: true },
+  '3_ET301': { id: '3_ET301', floor: 3, x: 600, y: 420, isRoom: true, label: "ET-301" },
+  '3_LAB':   { id: '3_LAB', floor: 3, x: 575, y: 580, isRoom: true, label: "Third Floor Lab" },
 };
 
 // --- EDGE DEFINITIONS (logical; distances auto-computed) ---
@@ -101,11 +104,12 @@ export const CONNECTIONS = [
   ['1_CORR_1', '1_LIBRARY'], ['1_CORR_2', '1_LIFT'], ['1_CORR_3', '1_HOD'],
   ['1_CORR_4', '1_INFO'], ['1_CORR_5', '1_STAFF'], ['1_CORR_6', '1_ET101'],
 
-  // Second Floor (right hallway + bridge to left cluster)
+  // Second Floor (right hallway + diagonal bridge to left wing)
   ['2_CORR_1', '2_CORR_2'], ['2_CORR_2', '2_CORR_3'], ['2_CORR_3', '2_CORR_4'],
-  ['2_CORR_1', '2_WING_1'], ['2_CORR_1', '2_LIFT'],
+  ['2_CORR_1', '2_LIFT'],
   ['2_CORR_2', '2_ET201'], ['2_CORR_3', '2_ET202'], ['2_CORR_4', '2_ET203'],
-  ['2_WING_1', '2_LAB'], ['2_WING_1', '2_PG'], ['2_PG', '2_FREE'], ['2_LAB', '2_STAFF'],
+  ['2_CORR_1', '2_BRIDGE'], ['2_BRIDGE', '2_WING'],
+  ['2_WING', '2_LAB'], ['2_WING', '2_PG'], ['2_WING', '2_FREE'], ['2_WING', '2_STAFF'],
 
   // Third Floor (washrooms -> angled corridor -> right room column)
   ['3_MEN', '3_CORR_TOP'], ['3_WOMEN', '3_CORR_TOP'],
