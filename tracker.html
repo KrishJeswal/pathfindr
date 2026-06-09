@@ -170,7 +170,9 @@
     <script>
         // --- IMPORTANT: PASTE YOUR FIREBASE CONFIG HERE ---
         const firebaseConfig = {
-            databaseURL: "https://faculty-monitoring-system-default-rtdb.firebaseio.com/"
+            // NOTE: "aculty-monitoring-system" is the real Firebase project ID
+            // (project IDs are permanent — it is NOT a typo for "faculty").
+            databaseURL: "https://aculty-monitoring-system-default-rtdb.firebaseio.com/"
         };
         firebase.initializeApp(firebaseConfig);
         const db = firebase.database();
