@@ -1,148 +1,6 @@
-import React, { useState, useMemo } from 'react';
-
-// --- MATHEMATICALLY PERFECT GLOBAL COORDINATES ---
-// Wing nodes are mapped to precise linear equations: y = mx + b
-const NODES = {
-  // Ground Floor Main Vertical Spine (x = 635)
-  'G_CORR_1': { id: 'G_CORR_1', floor: 0, x: 635, y: 50, isRoom: false },
-  'G_CORR_2': { id: 'G_CORR_2', floor: 0, x: 635, y: 117, isRoom: false },
-  'G_CORR_3': { id: 'G_CORR_3', floor: 0, x: 635, y: 237, isRoom: false },
-  'G_CORR_4': { id: 'G_CORR_4', floor: 0, x: 635, y: 295, isRoom: false }, // Lift Area
-  'G_CORR_JOIN': { id: 'G_CORR_JOIN', floor: 0, x: 635, y: 315, isRoom: false }, // True Intersection to Wing
-  'G_CORR_5': { id: 'G_CORR_5', floor: 0, x: 635, y: 380, isRoom: false },
-  'G_CORR_6': { id: 'G_CORR_6', floor: 0, x: 635, y: 475, isRoom: false },
-  'G_CORR_7': { id: 'G_CORR_7', floor: 0, x: 635, y: 600, isRoom: false },
-  
-  // Ground Floor Angled Wing Pathing (Slope = -0.53, perfectly parallel to -28° rotation)
-  'G_WING_1': { id: 'G_WING_1', floor: 0, x: 500, y: 387, isRoom: false },
-  'G_WING_2': { id: 'G_WING_2', floor: 0, x: 350, y: 466, isRoom: false },
-
-  // Ground Floor Rooms
-  'G_MEN':          { id: 'G_MEN', floor: 0, x: 665, y: 50, isRoom: true, label: "Men's Washroom" },
-  'G_WOMEN':        { id: 'G_WOMEN', floor: 0, x: 800, y: 117, isRoom: true, label: "Women's Washroom" },
-  'G_DATA':         { id: 'G_DATA', floor: 0, x: 770, y: 237, isRoom: true, label: "Data Centre" },
-  'G_LIFT':         { id: 'G_LIFT', floor: 0, x: 690, y: 295, isRoom: true, label: "Lift", isTransit: true },
-  'G_DISCUSSION':   { id: 'G_DISCUSSION', floor: 0, x: 770, y: 380, isRoom: true, label: "Discussion Room" },
-  'G_FACULTY':      { id: 'G_FACULTY', floor: 0, x: 724, y: 475, isRoom: true, label: "Faculty Room" },
-  'G_SERVER':       { id: 'G_SERVER', floor: 0, x: 825, y: 475, isRoom: true, label: "Server Room" },
-  'G_LAB':          { id: 'G_LAB', floor: 0, x: 735, y: 600, isRoom: true, label: "Ground Floor Lab" },
-  'G_SEMINAR':      { id: 'G_SEMINAR', floor: 0, x: 220, y: 535, isRoom: true, label: "Seminar Hall" },
-
-  // First Floor Main Vertical Spine (x = 680)
-  '1_CORR_1': { id: '1_CORR_1', floor: 1, x: 680, y: 60, isRoom: false },
-  '1_CORR_JOIN': { id: '1_CORR_JOIN', floor: 1, x: 680, y: 240, isRoom: false }, // True Intersection to Wing
-  '1_CORR_2': { id: '1_CORR_2', floor: 1, x: 680, y: 290, isRoom: false },
-  '1_CORR_3': { id: '1_CORR_3', floor: 1, x: 680, y: 350, isRoom: false },
-  '1_CORR_4': { id: '1_CORR_4', floor: 1, x: 680, y: 410, isRoom: false },
-  '1_CORR_5': { id: '1_CORR_5', floor: 1, x: 680, y: 505, isRoom: false },
-  '1_CORR_6': { id: '1_CORR_6', floor: 1, x: 680, y: 625, isRoom: false },
-  
-  // First Floor Angled Diagonal Wing Pathing (Slope = -0.577, perfectly parallel to -30° rotation)
-  '1_WING_1': { id: '1_WING_1', floor: 1, x: 530, y: 327, isRoom: false },
-  '1_WING_2': { id: '1_WING_2', floor: 1, x: 380, y: 413, isRoom: false },
-
-  // First Floor Rooms
-  '1_LIBRARY':      { id: '1_LIBRARY', floor: 1, x: 640, y: 60, isRoom: true, label: "Library" },
-  '1_LIFT':         { id: '1_LIFT', floor: 1, x: 730, y: 290, isRoom: true, label: "Lift", isTransit: true },
-  '1_HOD':          { id: '1_HOD', floor: 1, x: 780, y: 350, isRoom: true, label: "HOD Office" },
-  '1_INFO':         { id: '1_INFO', floor: 1, x: 780, y: 410, isRoom: true, label: "Information Desk" },
-  '1_STAFF':        { id: '1_STAFF', floor: 1, x: 780, y: 505, isRoom: true, label: "Staff Room" },
-  '1_ET101':        { id: '1_ET101', floor: 1, x: 710, y: 625, isRoom: true, label: "ET-101 Lecture Hall" },
-  '1_LAB':          { id: '1_LAB', floor: 1, x: 350, y: 430, isRoom: true, label: "Advanced Lab" },
-  '1_DSPLAB':       { id: '1_DSPLAB', floor: 1, x: 200, y: 517, isRoom: true, label: "DSP Lab" } 
-};
-
-// --- DYNAMIC EDGE DEFINITIONS ---
-// Defining logical connections. The system will auto-calculate exact geometric distances.
-const CONNECTIONS = [
-  // Ground Floor
-  ['G_CORR_1', 'G_CORR_2'], ['G_CORR_2', 'G_CORR_3'], ['G_CORR_3', 'G_CORR_4'],
-  ['G_CORR_4', 'G_CORR_JOIN'], ['G_CORR_JOIN', 'G_CORR_5'], ['G_CORR_5', 'G_CORR_6'], ['G_CORR_6', 'G_CORR_7'],
-  ['G_CORR_JOIN', 'G_WING_1'], ['G_WING_1', 'G_WING_2'], ['G_WING_2', 'G_SEMINAR'],
-  ['G_CORR_1', 'G_MEN'], ['G_CORR_2', 'G_WOMEN'], ['G_CORR_3', 'G_DATA'],
-  ['G_CORR_4', 'G_LIFT'], ['G_CORR_5', 'G_DISCUSSION'], ['G_CORR_6', 'G_FACULTY'], 
-  ['G_CORR_6', 'G_SERVER'], ['G_CORR_7', 'G_LAB'],
-
-  // First Floor
-  ['1_CORR_1', '1_CORR_JOIN'], ['1_CORR_JOIN', '1_CORR_2'], ['1_CORR_2', '1_CORR_3'], 
-  ['1_CORR_3', '1_CORR_4'], ['1_CORR_4', '1_CORR_5'], ['1_CORR_5', '1_CORR_6'],
-  ['1_CORR_JOIN', '1_WING_1'], ['1_WING_1', '1_WING_2'], ['1_WING_2', '1_LAB'], ['1_WING_2', '1_DSPLAB'],
-  ['1_CORR_1', '1_LIBRARY'], ['1_CORR_2', '1_LIFT'], ['1_CORR_3', '1_HOD'], 
-  ['1_CORR_4', '1_INFO'], ['1_CORR_5', '1_STAFF'], ['1_CORR_6', '1_ET101'],
-
-  // Vertical Transit
-  ['G_LIFT', '1_LIFT']
-];
-
-// Compile Adjacency List with exact Euclidean distances automatically
-const EDGES = {};
-Object.keys(NODES).forEach(id => EDGES[id] = []);
-
-CONNECTIONS.forEach(([a, b]) => {
-  const nodeA = NODES[a];
-  const nodeB = NODES[b];
-  const dx = nodeA.x - nodeB.x;
-  const dy = nodeA.y - nodeB.y;
-  let dist = Math.sqrt(dx * dx + dy * dy);
-  
-  if (nodeA.floor !== nodeB.floor) dist += 1000; // Heavy penalty for cross-floor to optimize local pathing first
-
-  EDGES[a].push({ to: b, w: dist });
-  EDGES[b].push({ to: a, w: dist });
-});
-
-// --- A* ALGORITHM ENGINE ---
-function heuristic(nodeA, nodeB) {
-  const dx = nodeA.x - nodeB.x;
-  const dy = nodeA.y - nodeB.y;
-  const floorDifference = Math.abs(nodeA.floor - nodeB.floor) * 1000;
-  return Math.sqrt(dx * dx + dy * dy) + floorDifference;
-}
-
-function findShortestPathAStar(startId, endId) {
-  if (!NODES[startId] || !NODES[endId]) return [];
-  const openSet = [startId];
-  const cameFrom = {};
-  const gScore = {};
-  const fScore = {};
-  
-  Object.keys(NODES).forEach(key => {
-    gScore[key] = Infinity;
-    fScore[key] = Infinity;
-  });
-  
-  gScore[startId] = 0;
-  fScore[startId] = heuristic(NODES[startId], NODES[endId]);
-
-  while (openSet.length > 0) {
-    openSet.sort((a, b) => fScore[a] - fScore[b]);
-    const current = openSet.shift();
-
-    if (current === endId) {
-      const path = [];
-      let temp = current;
-      while (temp) {
-        path.push(temp);
-        temp = cameFrom[temp];
-      }
-      return path.reverse();
-    }
-
-    const neighbors = EDGES[current] || [];
-    for (let neighbor of neighbors) {
-      const tentativeGScore = gScore[current] + neighbor.w;
-      if (tentativeGScore < gScore[neighbor.to]) {
-        cameFrom[neighbor.to] = current;
-        gScore[neighbor.to] = tentativeGScore;
-        fScore[neighbor.to] = gScore[neighbor.to] + heuristic(NODES[neighbor.to], NODES[endId]);
-        if (!openSet.includes(neighbor.to)) {
-          openSet.push(neighbor.to);
-        }
-      }
-    }
-  }
-  return [];
-}
+import { useState, useMemo } from 'react';
+import { NODES, FLOORS, getRoomOptions, findShortestPathAStar } from './navigation.js';
+import FloorPlans from './FloorPlans.jsx';
 
 export default function App() {
   const [currentFloor, setCurrentFloor] = useState(0);
@@ -151,11 +9,7 @@ export default function App() {
   const [calculatedPath, setCalculatedPath] = useState([]);
   const [activeSelectionMode, setActiveSelectionMode] = useState('src');
 
-  const roomOptions = useMemo(() => {
-    return Object.values(NODES)
-      .filter(n => n.isRoom)
-      .sort((a, b) => a.label.localeCompare(b.label));
-  }, []);
+  const roomOptions = useMemo(() => getRoomOptions(), []);
 
   const handleMapNodeClick = (nodeId) => {
     if (activeSelectionMode === 'src') {
@@ -222,7 +76,7 @@ export default function App() {
 
   return (
     <div className="flex flex-col h-screen w-screen bg-[#030712] text-zinc-100 font-sans overflow-hidden select-none relative">
-      
+
       {/* GLOBAL CSS ANIMATION INJECTION */}
       <style>{`
         .energy-flow {
@@ -236,10 +90,17 @@ export default function App() {
           background-image: radial-gradient(rgba(255,255,255,0.06) 1px, transparent 1px);
           background-size: 24px 24px;
         }
+        .animate-fade-in {
+          animation: fadeIn 0.4s ease both;
+        }
+        @keyframes fadeIn {
+          from { opacity: 0; transform: translateY(4px); }
+          to { opacity: 1; transform: translateY(0); }
+        }
       `}</style>
 
       {/* HEADER BAR */}
-      <header className="flex h-16 items-center justify-between px-8 border-b border-white/5 bg-black/60 backdrop-blur-xl z-20">
+      <header className="flex h-16 items-center justify-between gap-4 px-6 border-b border-white/5 bg-black/60 backdrop-blur-xl z-20">
         <div className="flex items-center gap-3">
           <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-cyan-400 to-blue-600 flex items-center justify-center shadow-[0_0_15px_rgba(34,211,238,0.4)]">
             <svg className="w-5 h-5 text-black" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.5"><path strokeLinecap="round" strokeLinejoin="round" d="M13 5l7 7-7 7M5 5l7 7-7 7" /></svg>
@@ -250,23 +111,20 @@ export default function App() {
           </div>
         </div>
         <div className="flex items-center p-1 bg-white/5 rounded-xl border border-white/10 shadow-inner">
-          <button 
-            onClick={() => setCurrentFloor(0)}
-            className={`px-5 py-1.5 text-xs font-bold rounded-lg transition-all duration-300 ${currentFloor === 0 ? 'bg-white text-black shadow-lg' : 'text-zinc-400 hover:text-white hover:bg-white/5'}`}
-          >
-            Ground Floor
-          </button>
-          <button 
-            onClick={() => setCurrentFloor(1)}
-            className={`px-5 py-1.5 text-xs font-bold rounded-lg transition-all duration-300 ${currentFloor === 1 ? 'bg-white text-black shadow-lg' : 'text-zinc-400 hover:text-white hover:bg-white/5'}`}
-          >
-            1st Floor
-          </button>
+          {FLOORS.map(f => (
+            <button
+              key={f.id}
+              onClick={() => setCurrentFloor(f.id)}
+              className={`px-3.5 py-1.5 text-xs font-bold rounded-lg transition-all duration-300 whitespace-nowrap ${currentFloor === f.id ? 'bg-white text-black shadow-lg' : 'text-zinc-400 hover:text-white hover:bg-white/5'}`}
+            >
+              {f.label}
+            </button>
+          ))}
         </div>
       </header>
 
       <main className="flex flex-1 overflow-hidden relative z-10">
-        
+
         {/* GLASSMORPHISM SIDEBAR CONTROLS */}
         <aside className="w-80 border-r border-white/5 bg-black/40 backdrop-blur-2xl p-6 flex flex-col gap-6 overflow-y-auto shadow-[10px_0_30px_rgba(0,0,0,0.5)] z-20">
           <div className="space-y-5">
@@ -285,7 +143,7 @@ export default function App() {
                   <option value="" disabled>Initialize starting position...</option>
                   {roomOptions.map(node => (
                     <option key={`src-${node.id}`} value={node.id} className="bg-zinc-900">
-                      {node.label} (Level {node.floor === 0 ? 'G' : '1'})
+                      {node.label} (Level {FLOORS.find(f => f.id === node.floor)?.short ?? node.floor})
                     </option>
                   ))}
                 </select>
@@ -308,7 +166,7 @@ export default function App() {
                   <option value="" disabled>Initialize destination target...</option>
                   {roomOptions.map(node => (
                     <option key={`dest-${node.id}`} value={node.id} className="bg-zinc-900">
-                      {node.label} (Level {node.floor === 0 ? 'G' : '1'})
+                      {node.label} (Level {FLOORS.find(f => f.id === node.floor)?.short ?? node.floor})
                     </option>
                   ))}
                 </select>
@@ -343,8 +201,13 @@ export default function App() {
               {navigationInstructions ? (
                 <div className="space-y-2">
                   <p className="text-xs text-white font-medium leading-relaxed">{navigationInstructions}</p>
-                  <div className="text-[10px] text-cyan-400 font-mono bg-black/40 px-2 py-1 rounded inline-block border border-cyan-500/20">
-                    Nodes traversed: {calculatedPath.length}
+                  <div className="flex flex-wrap gap-2">
+                    <div className="text-[10px] text-cyan-400 font-mono bg-black/40 px-2 py-1 rounded inline-block border border-cyan-500/20">
+                      Nodes traversed: {calculatedPath.length}
+                    </div>
+                    <div className="text-[10px] text-zinc-300 font-mono bg-black/40 px-2 py-1 rounded inline-block border border-white/10">
+                      Viewing: {FLOORS.find(f => f.id === currentFloor)?.label}
+                    </div>
                   </div>
                 </div>
               ) : (
@@ -357,10 +220,10 @@ export default function App() {
         {/* INTERACTIVE RADAR WORKSPACE */}
         <section className="flex-1 p-8 flex items-center justify-center relative bg-gradient-to-b from-[#030712] to-[#0a1118]">
           <div className="absolute inset-0 grid-bg opacity-30"></div>
-          
+
           <div className="w-full h-full max-w-5xl border border-white/10 bg-black/40 backdrop-blur-sm rounded-3xl p-6 flex items-center justify-center shadow-[inset_0_0_40px_rgba(0,0,0,0.8)] relative z-10">
             <svg viewBox="0 0 1000 700" className="w-full h-full select-none" xmlns="http://www.w3.org/2000/svg">
-              
+
               <defs>
                 <style>{`
                   .room-core { transition: all 0.3s ease; cursor: crosshair; }
@@ -369,7 +232,7 @@ export default function App() {
                   .stair-hatch { stroke: #1e3a5f; stroke-width: 1.5; opacity: 0.5; }
                   .structural-spine { fill: #06101c; stroke: #0f1c2e; stroke-width: 1; }
                 `}</style>
-                
+
                 {/* Flowing Energy Line Gradient */}
                 <linearGradient id="neonPath" x1="0%" y1="0%" x2="100%" y2="100%">
                   <stop offset="0%" stopColor="#34d399" />
@@ -378,134 +241,13 @@ export default function App() {
                 </linearGradient>
               </defs>
 
-              {/* === GROUND FLOOR LAYER === */}
-              {currentFloor === 0 && (
-                <g id="g-floor-group" className="animate-fade-in">
-                  {/* MAIN CORRIDORS */}
-                  <rect x="600" y="80" width="70" height="450" rx="4" className="structural-spine" />
-                  <rect x="600" y="80" width="125" height="70" rx="4" className="structural-spine" />
-
-                  <g onClick={() => handleMapNodeClick('G_MEN')}>
-                    <rect x="600" y="20" width="130" height="60" rx="4" className="room-core" fill={getRoomFill('G_MEN')} stroke={getRoomStroke('G_MEN')} strokeWidth="1.5" />
-                    <text x="665" y="54" className="room-txt">MEN'S WR</text>
-                  </g>
-
-                  <g onClick={() => handleMapNodeClick('G_WOMEN')}>
-                    <rect x="725" y="85" width="150" height="65" rx="4" className="room-core" fill={getRoomFill('G_WOMEN')} stroke={getRoomStroke('G_WOMEN')} strokeWidth="1.5" />
-                    <text x="800" y="121" className="room-txt">WOMEN'S WR</text>
-                  </g>
-
-                  {/* CONNECTING CORRIDOR STRIP (Former Stairs) */}
-                  <g transform="rotate(-28 520 300) translate(460,270)">
-                    <rect x="0" y="0" width="140" height="25" fill="#06101c" stroke="#1e3a5f" strokeWidth="1.5" />
-                    {[15, 30, 45, 60, 75, 90, 105, 120].map(v => <line key={`h1-${v}`} x1={v} y1="0" x2={v} y2="25" className="stair-hatch" />)}
-                    <rect x="0" y="30" width="140" height="25" fill="#06101c" stroke="#1e3a5f" strokeWidth="1.5" />
-                    {[15, 30, 45, 60, 75, 90, 105, 120].map(v => <line key={`h2-${v}`} x1={v} y1="30" x2={v} y2="55" className="stair-hatch" />)}
-                  </g>
-
-                  {/* ANGLED CONNECTOR BUFFER */}
-                  <g transform="rotate(-28 520 680)">
-                    <rect x="460" y="290" width="170" height="170" rx="4" className="structural-spine" />
-                  </g>
-
-                  <g transform="rotate(-28 300 650)" onClick={() => handleMapNodeClick('G_SEMINAR')}>
-                    <rect x="120" y="380" width="300" height="180" rx="4" className="room-core" fill={getRoomFill('G_SEMINAR')} stroke={getRoomStroke('G_SEMINAR')} strokeWidth="1.5" />
-                    <text x="270" y="475" className="room-txt">SEMINAR HALL</text>
-                  </g>
-
-                  <g onClick={() => handleMapNodeClick('G_DATA')}>
-                    <rect x="670" y="202" width="200" height="70" rx="4" className="room-core" fill={getRoomFill('G_DATA')} stroke={getRoomStroke('G_DATA')} strokeWidth="1.5" />
-                    <text x="770" y="241" className="room-txt">DATA CENTRE</text>
-                  </g>
-
-                  <g onClick={() => handleMapNodeClick('G_DISCUSSION')}>
-                    <rect x="670" y="320" width="200" height="120" rx="4" className="room-core" fill={getRoomFill('G_DISCUSSION')} stroke={getRoomStroke('G_DISCUSSION')} strokeWidth="1.5" />
-                    <text x="770" y="385" className="room-txt">DISCUSSION</text>
-                  </g>
-
-                  {/* CORE LIFT */}
-                  <g onClick={() => handleMapNodeClick('G_LIFT')} className="cursor-crosshair group">
-                    <rect x="670" y="275" width="40" height="40" rx="4" fill={getRoomFill('G_LIFT', '#1e3a8a')} stroke={getRoomStroke('G_LIFT')} strokeWidth="1.5" className="transition-all group-hover:stroke-blue-400" />
-                    <text x="690" y="299" className="room-txt text-white" style={{ fill: '#93c5fd' }}>LIFT</text>
-                  </g>
-
-                  <g onClick={() => handleMapNodeClick('G_FACULTY')}>
-                    <rect x="670" y="440" width="109" height="70" rx="4" className="room-core" fill={getRoomFill('G_FACULTY')} stroke={getRoomStroke('G_FACULTY')} strokeWidth="1.5" />
-                    <text x="724" y="479" className="room-txt">FACULTY</text>
-                  </g>
-
-                  <g onClick={() => handleMapNodeClick('G_SERVER')}>
-                    <rect x="780" y="440" width="90" height="70" rx="4" className="room-core" fill={getRoomFill('G_SERVER')} stroke={getRoomStroke('G_SERVER')} strokeWidth="1.5" />
-                    <text x="825" y="479" className="room-txt" style={{ fontSize: '9px' }}>SERVER</text>
-                  </g>
-
-                  <g onClick={() => handleMapNodeClick('G_LAB')}>
-                    <rect x="600" y="510" width="270" height="180" rx="4" className="room-core" fill={getRoomFill('G_LAB')} stroke={getRoomStroke('G_LAB')} strokeWidth="1.5" />
-                    <text x="735" y="605" className="room-txt">CORE LAB</text>
-                  </g>
-                </g>
-              )}
-
-              {/* === FIRST FLOOR LAYER === */}
-              {currentFloor === 1 && (
-                <g id="1-floor-group" className="animate-fade-in">
-                  {/* MAIN CORRIDORS */}
-                  <rect x="650" y="80" width="60" height="500" rx="4" className="structural-spine" />
-                  <rect x="750" y="100" width="100" height="210" rx="4" className="structural-spine" />
-                  <rect x="650" y="100" width="100" height="210" rx="4" className="structural-spine" />
-
-                  {/* ANGLED CORRIDOR BUFFER */}
-                  <g transform="rotate(-30 460 350)">
-                    <rect x="285" y="255" width="450" height="80" rx="4" className="structural-spine" />
-                  </g>
-
-                  <g onClick={() => handleMapNodeClick('1_LIBRARY')}>
-                    <rect x="570" y="20" width="140" height="80" rx="4" className="room-core" fill={getRoomFill('1_LIBRARY')} stroke={getRoomStroke('1_LIBRARY')} strokeWidth="1.5" />
-                    <text x="640" y="64" className="room-txt">LIBRARY</text>
-                  </g>
-
-                  {/* CONNECTING CORRIDOR STRIP */}
-                  <g transform="rotate(-30 590 450) translate(690,180)">
-                    <rect width="120" height="20" fill="#06101c" stroke="#1e3a5f" strokeWidth="1.5" />
-                    {[15, 30, 45, 60, 75, 90].map(v => <line key={`h3-${v}`} x1={v} y1="0" x2={v} y2="20" className="stair-hatch" />)}
-                  </g>
-
-                  <g transform="rotate(-30 300 450)" onClick={() => handleMapNodeClick('1_DSPLAB')}>
-                    <rect x="100" y="350" width="220" height="180" rx="4" className="room-core" fill={getRoomFill('1_DSPLAB')} stroke={getRoomStroke('1_DSPLAB')} strokeWidth="1.5" />
-                    <text x="210" y="444" className="room-txt">DSP LAB</text>
-                  </g>
-
-                  <g transform="rotate(-30 450 420)" onClick={() => handleMapNodeClick('1_LAB')}>
-                    <rect x="325" y="350" width="90" height="100" rx="4" className="room-core" fill={getRoomFill('1_LAB')} stroke={getRoomStroke('1_LAB')} strokeWidth="1.5" />
-                    <text x="370" y="404" className="room-txt">ADV LAB</text>
-                  </g>
-
-                  <g onClick={() => handleMapNodeClick('1_LIFT')} className="cursor-crosshair group">
-                    <rect x="710" y="270" width="40" height="40" rx="4" fill={getRoomFill('1_LIFT', '#1e3a8a')} stroke={getRoomStroke('1_LIFT')} strokeWidth="1.5" className="transition-all group-hover:stroke-blue-400" />
-                    <text x="730" y="294" className="room-txt text-white" style={{ fill: '#93c5fd' }}>LIFT</text>
-                  </g>
-
-                  <g onClick={() => handleMapNodeClick('1_HOD')}>
-                    <rect x="710" y="310" width="140" height="80" rx="4" className="room-core" fill={getRoomFill('1_HOD')} stroke={getRoomStroke('1_HOD')} strokeWidth="1.5" />
-                    <text x="780" y="354" className="room-txt">HOD OFFICE</text>
-                  </g>
-
-                  <g onClick={() => handleMapNodeClick('1_INFO')}>
-                    <rect x="710" y="390" width="140" height="40" rx="4" className="room-core" fill={getRoomFill('1_INFO')} stroke={getRoomStroke('1_INFO')} strokeWidth="1.5" />
-                    <text x="780" y="413" className="room-txt" style={{ fontSize: '9px' }}>INFO DESK</text>
-                  </g>
-
-                  <g onClick={() => handleMapNodeClick('1_STAFF')}>
-                    <rect x="710" y="430" width="140" height="150" rx="4" className="room-core" fill={getRoomFill('1_STAFF')} stroke={getRoomStroke('1_STAFF')} strokeWidth="1.5" />
-                    <text x="780" y="509" className="room-txt">STAFF ROOM</text>
-                  </g>
-
-                  <g onClick={() => handleMapNodeClick('1_ET101')}>
-                    <rect x="650" y="580" width="120" height="90" rx="4" className="room-core" fill={getRoomFill('1_ET101')} stroke={getRoomStroke('1_ET101')} strokeWidth="1.5" />
-                    <text x="710" y="629" className="room-txt">ET-101</text>
-                  </g>
-                </g>
-              )}
+              {/* FLOOR LAYERS */}
+              <FloorPlans
+                floor={currentFloor}
+                getRoomFill={getRoomFill}
+                getRoomStroke={getRoomStroke}
+                onNodeClick={handleMapNodeClick}
+              />
 
               {/* DYNAMIC PATH VECTOR RUNNER */}
               {calculatedPath.length >= 2 && getPathPolyline() && (

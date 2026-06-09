@@ -1,0 +1,136 @@
+<?xml version="1.0" encoding="utf-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 700">
+
+  <defs>
+    <style>
+      .bg{fill:#071827}
+      .room{fill:#072b36; stroke:#0f7a7a; stroke-width:2}
+      .corridor{fill:#0b3340}
+      .label{font:13px Inter, Arial; fill:#cfeff9}
+      .elev{fill:#1f4060}
+      .door{fill:#000}
+      .stair-step{stroke:#cfeff9; stroke-width:1}
+      .stair-box{stroke:#cfeff9; stroke-width:1; fill:none}
+    </style>
+  </defs>
+
+  <!-- background -->
+  <rect width="100%" height="100%" class="bg"/>
+
+  <!-- ================= LEFT SECTION ================= -->
+  <g transform="translate(-100,210) scale(0.75) rotate(60 570 300)">
+
+    <!-- ================= STAFF ROOM (BOTTOM) ================= -->
+    <rect x="300" y="500" width="460" height="150" class="room"/>
+    <text x="430" y="580" class="label">Staff Room</text>
+
+    <!-- ================= LAB ================= -->
+    <rect x="300" y="250" width="200" height="250" class="room"/>
+    <text x="360" y="380" class="label">Lab</text>
+
+    <!-- ================= CORRIDOR (VERTICAL STRIP) ================= -->
+    <rect x="500" y="250" width="60" height="250" class="corridor"/>
+    <text x="525" y="330" class="label" transform="rotate(90 525 330)">CORRIDOR</text>
+
+    <!-- ================= PG CLASSROOM ================= -->
+    <rect x="560" y="250" width="200" height="180" class="room"/>
+    <text x="610" y="340" class="label">PG Classroom</text>
+
+    <!-- ================= FREE SPACE ================= -->
+    <rect x="560" y="430" width="200" height="70" class="room"/>
+    <text x="610" y="470" class="label">Free Space</text>
+
+    <!-- ================= STAIRS (L SHAPE) ================= -->
+
+    <!-- vertical stair -->
+    <g transform="translate(300,120)">
+      <rect width="40" height="130" class="room"/>
+      <rect width="40" height="130" class="stair-box"/>
+
+      <line x1="5" y1="10" x2="35" y2="10" class="stair-step"/>
+      <line x1="5" y1="25" x2="35" y2="25" class="stair-step"/>
+      <line x1="5" y1="40" x2="35" y2="40" class="stair-step"/>
+      <line x1="5" y1="55" x2="35" y2="55" class="stair-step"/>
+      <line x1="5" y1="70" x2="35" y2="70" class="stair-step"/>
+      <line x1="5" y1="85" x2="35" y2="85" class="stair-step"/>
+      <line x1="5" y1="100" x2="35" y2="100" class="stair-step"/>
+    </g>
+
+    <!-- horizontal stair -->
+    <g transform="translate(340,210)">
+      <rect width="120" height="40" class="room"/>
+      <rect width="120" height="40" class="stair-box"/>
+
+      <line x1="10" y1="5" x2="10" y2="35" class="stair-step"/>
+      <line x1="25" y1="5" x2="25" y2="35" class="stair-step"/>
+      <line x1="40" y1="5" x2="40" y2="35" class="stair-step"/>
+      <line x1="55" y1="5" x2="55" y2="35" class="stair-step"/>
+      <line x1="70" y1="5" x2="70" y2="35" class="stair-step"/>
+      <line x1="85" y1="5" x2="85" y2="35" class="stair-step"/>
+      <line x1="100" y1="5" x2="100" y2="35" class="stair-step"/>
+    </g>
+
+  </g>
+
+  <!-- ================= RIGHT SECTION ================= -->
+  <g transform="translate(100,0)">
+
+    <!-- ================= HALLWAY (VERTICAL) ================= -->
+    <rect x="620" y="180" width="60" height="420" class="corridor"/>
+
+    <!-- ================= ROOMS RIGHT SIDE ================= -->
+
+    <!-- ET-201 -->
+    <rect x="680" y="219" width="200" height="120" class="room"/>
+    <text x="740" y="240" class="label">ET-201</text>
+
+    <!-- ET-202 -->
+    <rect x="680" y="340" width="200" height="120" class="room"/>
+    <text x="740" y="390" class="label">ET-202</text>
+
+    <!-- ET-203 -->
+    <rect x="680" y="460" width="200" height="140" class="room"/>
+    <text x="740" y="500" class="label">ET-203</text>
+
+    <!-- ================= LIFT ================= -->
+    <rect x="680" y="177" width="40" height="40" class="elev"/>
+    <text x="685" y="200" class="label">LIFT</text>
+
+    <!-- ================= STAIRS ================= -->
+    <g transform="translate(685,155)">
+      <rect width="100" height="20" class="room"/>
+      <rect width="100" height="20" class="stair-box"/>
+      <line x1="10" y1="2" x2="10" y2="18" class="stair-step"/>
+      <line x1="25" y1="2" x2="25" y2="18" class="stair-step"/>
+      <line x1="40" y1="2" x2="40" y2="18" class="stair-step"/>
+      <line x1="55" y1="2" x2="55" y2="18" class="stair-step"/>
+      <line x1="70" y1="2" x2="70" y2="18" class="stair-step"/>
+    </g>
+
+    <g transform="translate(685,135)">
+      <rect width="100" height="20" class="room"/>
+      <rect width="100" height="20" class="stair-box"/>
+      <line x1="10" y1="2" x2="10" y2="18" class="stair-step"/>
+      <line x1="25" y1="2" x2="25" y2="18" class="stair-step"/>
+      <line x1="40" y1="2" x2="40" y2="18" class="stair-step"/>
+      <line x1="55" y1="2" x2="55" y2="18" class="stair-step"/>
+      <line x1="70" y1="2" x2="70" y2="18" class="stair-step"/>
+    </g>
+
+    <!-- ================= BRIDGE ================= -->
+    <g transform="rotate(-30 400 300)">
+      <rect x="220" y="250" width="450" height="120" class="corridor"/>
+      <text x="350" y="310" class="label" transform="rotate(30 350 310)">BRIDGE</text>
+    </g>
+
+     <g transform="rotate(-210 400 300)">
+      <rect x="130" y="349" width="420" height="90" class="corridor"/>
+    </g>
+
+    
+
+    
+
+  </g>
+
+</svg>

@@ -22,3 +22,30 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+# Environment / local config
+.env
+.env.*
+!.env.example
+.npmrc
+
+# AI assistant / agent tooling
+.claude/
+.claude.json
+CLAUDE.md
+CLAUDE.local.md
+GEMINI.md
+AGENTS.md
+.cursor/
+.cursorrules
+.aider*
+.continue/
+.codeium/
+.windsurf/
+.github/copilot-instructions.md
+.superpowers/
+docs/superpowers/
+**/superpowers/
+
+# Test / coverage output
+coverage
